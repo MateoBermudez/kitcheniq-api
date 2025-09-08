@@ -1,19 +1,21 @@
 package com.uni.kitcheniq.model;
 
+import com.uni.kitcheniq.enums.OrderStatus;
 import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
-@Entity(name = "orders")
+@Entity
+@Table(name="Orders")
 public class Order {
-
     @Id
+    @Column(name="Id", unique = true, nullable = false)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "order_id", nullable = false, updatable = false)
-    private Long id;
+    private Long Id;
 
     @Column(name = "order_details", nullable = false)
     private String details;
@@ -24,43 +26,27 @@ public class Order {
     @Column(name = "order_bill", nullable = false)
     private String bill;
 
-    @Column(name = "order_status", nullable = false)
-    private String status = "PENDING";
+    OrderStatus status;
 
     @CreationTimestamp
     @Column(name = "order_date", nullable = false, updatable = false)
     private LocalDate orderDate;
 
-    @ManyToMany(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
-    @JoinTable(
-            name = "order_products",
-            joinColumns = @JoinColumn(name = "order_id"),
-            inverseJoinColumns = @JoinColumn(name = "component_id")
-    )
-    private List<OrderComponent> components = new ArrayList<>();
 
-    public Order(Long id, String details, double price, String bill, String status, List<OrderComponent> components) {
-        this.id = id;
-        this.details = details;
-        this.price = price;
-        this.bill = bill;
-        this.status = status;
-        this.components = components != null ? components : new ArrayList<>();
-    }
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<OrderItem> orderItems;
 
-    public Order(String details, double price, String bill, String status) {
-        this.details = details;
-        this.price = price;
-        this.bill = bill;
-        this.status = status;
-    }
 
     public Order() {
         // Default constructor
     }
 
     public Long getId() {
-        return id;
+        return Id;
+    }
+
+    public void setId(Long id) {
+        Id = id;
     }
 
     public String getDetails() {
@@ -87,31 +73,11 @@ public class Order {
         this.bill = bill;
     }
 
-    public String getStatus() {
+    public OrderStatus getStatus() {
         return status;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(OrderStatus status) {
         this.status = status;
-    }
-
-    public LocalDate getOrderDate() {
-        return orderDate;
-    }
-
-    public List<OrderComponent> getComponents() {
-        return components;
-    }
-
-    public void setComponents(List<OrderComponent> components) {
-        this.components = components;
-    }
-
-    public void setOrderDate(LocalDate orderDate) {
-        this.orderDate = orderDate;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
     }
 }

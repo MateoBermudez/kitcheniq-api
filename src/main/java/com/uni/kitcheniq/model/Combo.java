@@ -1,53 +1,35 @@
 package com.uni.kitcheniq.model;
 
 import jakarta.persistence.*;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
+
 import java.util.Set;
 
-@Entity(name = "combo")
-@DiscriminatorValue("COMBO")
-public class Combo extends OrderComponent {
+@Entity
+@Table(name = "Combo")
+public class Combo extends MenuComponent{
 
-    @Column(name = "combo_name", nullable = false)
-    private String name;
+    @Column(name = "Name", nullable = false)
+    private String Name;
 
-    @Column(name = "combo_price", nullable = false)
-    private double price;
+    @Column(name = "Price", nullable = false)
+    private double Price;
 
     @ManyToMany
-    private List<OrderComponent> products = new ArrayList<>();
+    @JoinTable(
+        name = "Combo_MenuProduct",
+        joinColumns = @JoinColumn(name = "ComboId"),
+        inverseJoinColumns = @JoinColumn(name = "MenuProductId")
+    )
+    private Set<MenuProduct> Products;
+
+    public Combo() {
+        // Default constructor
+    }
 
     @Override
     public double getPrice() {
-        return products.stream().mapToDouble(OrderComponent::getPrice).sum(); // Sum of all product prices in the combo (No discount applied)
+        return Price;
     }
 
-    @Override
-    public String getDetails() {
-        price = getPrice();
-        return name + " - $" + getPrice() + " (Combo)";
-    }
 
-    @Override
-    public Set<ProductInventory> getRequiredIngredients() {
-        Set<ProductInventory> total= new HashSet<>();
-        for (OrderComponent prod : products) {
-            total.addAll(prod.getRequiredIngredients());
-        }
-        return total;
-    }
-
-    public List<OrderComponent> getProducts() {
-        return products;
-    }
-
-    public void setProducts(List<OrderComponent> products) {
-        this.products = products;
-    }
-
-    public void setPrice(double price) {
-        this.price = price;
-    }
 }

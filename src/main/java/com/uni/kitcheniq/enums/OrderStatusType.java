@@ -1,6 +1,6 @@
 package com.uni.kitcheniq.enums;
 
-public enum OrderStatus {
+public enum OrderStatusType {
     PENDING,
     IN_PROGRESS,
     COMPLETED,

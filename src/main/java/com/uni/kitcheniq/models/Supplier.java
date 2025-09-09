@@ -10,7 +10,7 @@ import jakarta.persistence.Table;
 public class Supplier {
     @Id
     @Column(name = "id", nullable = false)
-    private Long id;
+    private String id;
 
     @Column(name = "contact_info", nullable = false)
     private String contactInfo;
@@ -21,11 +21,11 @@ public class Supplier {
     @Column(name = "password", nullable = false)
     private String password;
 
-    public Long getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(String id) {
         this.id = id;
     }
 

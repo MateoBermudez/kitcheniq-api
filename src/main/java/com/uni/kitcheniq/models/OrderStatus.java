@@ -1,5 +1,6 @@
 package com.uni.kitcheniq.models;
 
+import com.uni.kitcheniq.enums.OrderStatusType;
 import jakarta.persistence.*;
 
 @Entity
@@ -19,7 +20,7 @@ public class OrderStatus {
     private Employee idEmployee;
 
     @Column(name = "status")
-    private Integer status;
+    OrderStatusType status;
 
     public Long getId() {
         return id;
@@ -45,11 +46,11 @@ public class OrderStatus {
         this.idEmployee = idEmployee;
     }
 
-    public Integer getStatus() {
+    public OrderStatusType getStatus() {
         return status;
     }
 
-    public void setStatus(Integer status) {
+    public void setStatus(OrderStatusType status) {
         this.status = status;
     }
 

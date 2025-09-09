@@ -1,15 +1,14 @@
 package com.uni.kitcheniq.models;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 
 @Entity
 @Table(name = "menu_component")
-public class MenuComponent {
+@Inheritance(strategy = InheritanceType.JOINED)
+public abstract class MenuComponent {
     @Id
     @Column(name = "id", nullable = false)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     public Long getId() {

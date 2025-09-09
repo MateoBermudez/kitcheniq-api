@@ -18,6 +18,9 @@ public class Supplier {
     @Column(name = "name", nullable = false)
     private String name;
 
+    @Column(name = "password", nullable = false)
+    private String password;
+
     public Long getId() {
         return id;
     }

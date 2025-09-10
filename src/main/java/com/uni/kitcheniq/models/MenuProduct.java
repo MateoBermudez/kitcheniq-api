@@ -4,10 +4,7 @@ import jakarta.persistence.*;
 
 @Entity
 @Table(name = "menu_product")
-public class MenuProduct {
-    @Id
-    @Column(name = "id", nullable = false)
-    private Long id;
+public class MenuProduct extends MenuComponent {
 
     @MapsId
     @OneToOne(fetch = FetchType.LAZY, optional = false)
@@ -19,14 +16,6 @@ public class MenuProduct {
 
     @Column(name = "price", nullable = false)
     private Double price;
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
 
     public MenuComponent getMenuComponent() {
         return menuComponent;

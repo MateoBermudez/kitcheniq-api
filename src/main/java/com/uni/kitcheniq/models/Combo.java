@@ -4,10 +4,7 @@ import jakarta.persistence.*;
 
 @Entity
 @Table(name = "combo")
-public class Combo {
-    @Id
-    @Column(name = "id", nullable = false)
-    private Long id;
+public class Combo extends MenuComponent {
 
     @MapsId
     @OneToOne(fetch = FetchType.LAZY, optional = false)
@@ -19,14 +16,6 @@ public class Combo {
 
     @Column(name = "price", nullable = false)
     private Double price;
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
 
     public MenuComponent getMenuComponent() {
         return menuComponent;

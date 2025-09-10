@@ -1,28 +1,29 @@
 package com.uni.kitcheniq.models;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import com.uni.kitcheniq.enums.EmployeeType;
+import jakarta.persistence.*;
 
 @Entity
 @Table(name = "employee")
 public class Employee {
     @Id
     @Column(name = "id", nullable = false)
-    private Long id;
+    private String id;
+
+    @Column(name = "password", nullable = false)
+    private String password;
 
     @Column(name = "name", nullable = false)
     private String name;
 
     @Column(name = "type", nullable = false)
-    private Short type;
+    EmployeeType type;
 
-    public Long getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(String id) {
         this.id = id;
     }
 
@@ -34,12 +35,19 @@ public class Employee {
         this.name = name;
     }
 
-    public Short getType() {
+    public EmployeeType getType() {
         return type;
     }
 
-    public void setType(Short type) {
+    public void setType(EmployeeType type) {
         this.type = type;
     }
 
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
 }

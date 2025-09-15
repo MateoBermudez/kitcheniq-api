@@ -17,7 +17,7 @@ public class OrderStatus {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_employee")
-    private Employee idEmployee;
+    private Employee employeeId;
 
     @Column(name = "status")
     OrderStatusType status;
@@ -38,12 +38,12 @@ public class OrderStatus {
         this.orders = orders;
     }
 
-    public Employee getIdEmployee() {
-        return idEmployee;
+    public Employee getEmployeeId() {
+        return employeeId;
     }
 
     public void setIdEmployee(Employee idEmployee) {
-        this.idEmployee = idEmployee;
+        this.employeeId = idEmployee;
     }
 
     public OrderStatusType getStatus() {

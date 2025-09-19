@@ -202,18 +202,6 @@ API documentation (e.g., Swagger/OpenAPI) will be added as the project matures.
 
 ---
 
-## Contributing
-
-Contributions are welcome! To contribute:
-1. Open an issue to discuss your proposal or bug.
-2. Fork the repo and create a feature branch.
-3. Make changes with clear commits and tests where applicable.
-4. Open a pull request describing the changes and motivation.
-
-Please follow conventional best practices (clean code, tests, small PRs).
-
----
-
 ## Credits
 
 - Maintainer: @MateoBermudez

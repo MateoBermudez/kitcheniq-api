@@ -8,6 +8,8 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Repository
 public interface PurchaseOrderRepository extends JpaRepository<PurchaseOrder, Long> {
 
@@ -18,11 +20,21 @@ public interface PurchaseOrderRepository extends JpaRepository<PurchaseOrder, Lo
 
     @Transactional
     @Modifying
-    @Query("UPDATE PurchaseOrder po SET po.updatedAt = CURRENT_TIMESTAMP WHERE po.id = ?1")
-    void updateTimestampById(Long id);
+    @Query("UPDATE PurchaseOrder po SET po.updatedAt = :updatedAt WHERE po.id = ?1")
+    void updateTimestampById(Long id, java.time.LocalDateTime updatedAt);
 
     @Query("SELECT po FROM PurchaseOrder po LEFT JOIN FETCH po.items WHERE po.id = :orderId")
     PurchaseOrder findPurchaseOrderByIdWithItems(Long orderId);
 
+    @Query("UPDATE PurchaseOrder po SET po.totalAmount = po.totalAmount - :difference WHERE po.id = :id")
+    @Modifying
+    @Transactional
+    void updateTotalPriceById(Long id, double difference);
+
+    @Query("SELECT po.totalAmount FROM PurchaseOrder po WHERE po.id = :id")
+    double getTotalPriceById(Long id);
+
+    @Query("SELECT po FROM PurchaseOrder po WHERE po.supplier.id = :supplierId")
+    List<PurchaseOrder> getPurchaseOrderBySupplierId(String supplierId);
 
 }

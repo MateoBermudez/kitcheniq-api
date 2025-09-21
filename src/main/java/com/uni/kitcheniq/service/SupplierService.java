@@ -5,12 +5,16 @@ import com.uni.kitcheniq.dto.PurchaseOrderItemDTO;
 import com.uni.kitcheniq.enums.PurchaseOrderType;
 import com.uni.kitcheniq.mapper.PurchaseOrderMapper;
 import com.uni.kitcheniq.models.PurchaseOrder;
+import com.uni.kitcheniq.models.PurchaseOrderItem;
 import com.uni.kitcheniq.repository.InventoryItemRepository;
 import com.uni.kitcheniq.repository.PurchaseOrderItemRepository;
 import com.uni.kitcheniq.repository.PurchaseOrderRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 public class SupplierService {
@@ -30,24 +34,6 @@ public class SupplierService {
         this.purchaseOrderMapper = purchaseOrderMapper;
     }
 
-    @Transactional
-    public String updateFirstStatus(PurchaseOrderDTO purchaseOrderDTO) {
-        PurchaseOrderType statusEnum = purchaseOrderDTO.getStatus();
-        String status = statusEnum.name();
-
-        purchaseOrderRepository.updateStatusById(purchaseOrderDTO.getOrderId(), statusEnum);
-        purchaseOrderRepository.updateTimestampById(purchaseOrderDTO.getOrderId());
-
-        if (status.equals("ACCEPTED")) {
-            return "Purchase order ACCEPTED correctly.";
-        } else if (status.equals("REJECTED")) {
-            return "Purchase order REJECTED correctly.";
-        } else {
-            return "Invalid status.";
-        }
-    }
-
-
     public PurchaseOrderDTO getPurchaseOrder(Long orderId) {
         PurchaseOrder order = purchaseOrderRepository.findPurchaseOrderByIdWithItems(orderId);
         if (order == null) {
@@ -58,15 +44,44 @@ public class SupplierService {
         return purchaseOrderDTO;
     }
 
-
+    @Transactional
     public String updateInventoryItem(PurchaseOrderItemDTO item){
         inventoryItemRepository.updateItemQuantity(item.getItemId(), item.getQuantity());
         return "Inventory updated successfully.";
     }
 
     @Transactional
-    public void updateStatus(PurchaseOrderType status, Long orderId) {
+    public String updateStatus(PurchaseOrderType status, Long orderId) {
         purchaseOrderRepository.updateStatusById(orderId, status);
-        purchaseOrderRepository.updateTimestampById(orderId);
+        purchaseOrderRepository.updateTimestampById(orderId, java.time.LocalDateTime.now());
+
+        return ("The purchase order has been updated to status: " + status + "");
+    }
+
+    @Transactional
+    public double adjustInOrder(PurchaseOrderItemDTO item) {
+        PurchaseOrderItem bdItem = purchaseOrderItemRepository.getItemById(item.getItemId(), item.getOrderId());
+
+        if (bdItem.getQuantity() > item.getQuantity()) {
+            purchaseOrderItemRepository.updateItemQuantity(item.getItemId(), item.getOrderId(), item.getQuantity());
+            double oldSubtotalPrice = bdItem.getQuantity() * bdItem.getUnitPrice();
+            double newSubtotalPrice = item.getQuantity() * item.getUnitPrice();
+            purchaseOrderItemRepository.updateSubtotalInItemOfOrderId(item.getItemId(), item.getOrderId(), newSubtotalPrice);
+
+            double difference = oldSubtotalPrice - newSubtotalPrice;
+            purchaseOrderRepository.updateTotalPriceById(item.getOrderId(), difference);
+        }
+
+        return purchaseOrderRepository.getTotalPriceById(item.getOrderId());
+    }
+
+    public List<PurchaseOrderDTO> getOrders (String supplierId) {
+        List<PurchaseOrder> orders = purchaseOrderRepository.getPurchaseOrderBySupplierId(supplierId);
+        List<PurchaseOrderDTO> orderDTOS = new ArrayList<>();
+
+        for (PurchaseOrder order : orders) {
+            orderDTOS.add(purchaseOrderMapper.toDTO(order));
+        }
+        return orderDTOS;
     }
 }

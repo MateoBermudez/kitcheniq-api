@@ -6,12 +6,9 @@ import com.uni.kitcheniq.enums.PurchaseOrderType;
 import com.uni.kitcheniq.service.SupplierService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
-import java.util.Set;
+import java.util.List;
 
 @RestController
 @RequestMapping("kitcheniq/api/v1/suppliers")
@@ -25,25 +22,35 @@ public class SupplierController {
     }
 
     @PostMapping("/purchase-order")
-    public ResponseEntity<String> receivePurchaseOrder(@RequestBody PurchaseOrderDTO purchaseOrderDTO) {
-        String response = supplierService.updateFirstStatus(purchaseOrderDTO);
+    public ResponseEntity<String> receivePurchaseOrder(@RequestParam Long orderId, @RequestParam String status) {
+        PurchaseOrderType purchaseOrderType = PurchaseOrderType.valueOf(status);
+        String response = supplierService.updateStatus(purchaseOrderType, orderId);
         return ResponseEntity.ok(response);
     }
 
     @PostMapping("/initiate-dispatch")
-    public ResponseEntity<PurchaseOrderDTO> initiateOrderDispatch(@RequestBody Long orderId) {
+    public ResponseEntity<PurchaseOrderDTO> initiateOrderDispatch(@RequestParam Long orderId) {
         PurchaseOrderDTO processedOrder = supplierService.getPurchaseOrder(orderId);
         supplierService.updateStatus(PurchaseOrderType.DISPATCHING, orderId);
         return ResponseEntity.ok(processedOrder);
     }
 
     @PostMapping("/deliver-order")
-    public ResponseEntity<String> deliverOrderProducts(@RequestBody Set<PurchaseOrderItemDTO> purchaseOrderItemDTO) {
-        for (PurchaseOrderItemDTO item : purchaseOrderItemDTO) {
-            supplierService.updateInventoryItem(item);
-        }
-        supplierService.updateStatus(PurchaseOrderType.DELIVERED, purchaseOrderItemDTO.iterator()
-                .next().getOrderId());
-        return ResponseEntity.ok("Order delivered and inventory updated successfully.");
+    public ResponseEntity<Double> deliverOrderProducts(@RequestBody PurchaseOrderItemDTO item) {
+        double subtotal = supplierService.adjustInOrder(item);
+        supplierService.updateInventoryItem(item);
+        return ResponseEntity.ok(subtotal);
+    }
+
+    @PostMapping("/finish-dispatch")
+    public ResponseEntity<String> finishOrderDispatch(@RequestParam Long purchaseOrderDTO) {
+        supplierService.updateStatus(PurchaseOrderType.DELIVERED, purchaseOrderDTO);
+        return ResponseEntity.ok("Order has been delivered.");
+    }
+
+    @GetMapping("/get-orders")
+    public ResponseEntity<List<PurchaseOrderDTO>> getOrders(@RequestParam String supplierId){
+        List<PurchaseOrderDTO> orders = supplierService.getOrders(supplierId);
+        return ResponseEntity.ok(orders);
     }
 }

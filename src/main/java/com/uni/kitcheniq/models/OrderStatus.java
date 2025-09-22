@@ -2,7 +2,11 @@ package com.uni.kitcheniq.models;
 
 import com.uni.kitcheniq.enums.OrderStatusType;
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 
+@Setter
+@Getter
 @Entity
 @Table(name = "order_status")
 public class OrderStatus {
@@ -21,37 +25,5 @@ public class OrderStatus {
 
     @Column(name = "status")
     OrderStatusType status;
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public Order getOrders() {
-        return orders;
-    }
-
-    public void setOrders(Order orders) {
-        this.orders = orders;
-    }
-
-    public Employee getIdEmployee() {
-        return idEmployee;
-    }
-
-    public void setIdEmployee(Employee idEmployee) {
-        this.idEmployee = idEmployee;
-    }
-
-    public OrderStatusType getStatus() {
-        return status;
-    }
-
-    public void setStatus(OrderStatusType status) {
-        this.status = status;
-    }
 
 }

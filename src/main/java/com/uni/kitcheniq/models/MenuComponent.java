@@ -1,7 +1,11 @@
 package com.uni.kitcheniq.models;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 
+@Setter
+@Getter
 @Entity
 @Table(name = "menu_component")
 @Inheritance(strategy = InheritanceType.JOINED)
@@ -10,14 +14,6 @@ public abstract class MenuComponent {
     @Column(name = "id", nullable = false)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
 
     //TODO [Reverse Engineering] generate columns from DB
 }

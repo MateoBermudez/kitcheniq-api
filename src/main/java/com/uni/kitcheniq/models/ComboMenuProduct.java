@@ -1,7 +1,11 @@
 package com.uni.kitcheniq.models;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 
+@Setter
+@Getter
 @Entity
 @Table(name = "combo_menu_product")
 public class ComboMenuProduct {
@@ -17,29 +21,5 @@ public class ComboMenuProduct {
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "menu_product_id", nullable = false)
     private MenuProduct menuProduct;
-
-    public ComboMenuProductId getId() {
-        return id;
-    }
-
-    public void setId(ComboMenuProductId id) {
-        this.id = id;
-    }
-
-    public Combo getCombo() {
-        return combo;
-    }
-
-    public void setCombo(Combo combo) {
-        this.combo = combo;
-    }
-
-    public MenuProduct getMenuProduct() {
-        return menuProduct;
-    }
-
-    public void setMenuProduct(MenuProduct menuProduct) {
-        this.menuProduct = menuProduct;
-    }
 
 }

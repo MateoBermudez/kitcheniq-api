@@ -1,7 +1,11 @@
 package com.uni.kitcheniq.models;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 
+@Setter
+@Getter
 @Entity
 @Table(name = "menu_product")
 public class MenuProduct extends MenuComponent {
@@ -16,29 +20,5 @@ public class MenuProduct extends MenuComponent {
 
     @Column(name = "price", nullable = false)
     private Double price;
-
-    public MenuComponent getMenuComponent() {
-        return menuComponent;
-    }
-
-    public void setMenuComponent(MenuComponent menuComponent) {
-        this.menuComponent = menuComponent;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public Double getPrice() {
-        return price;
-    }
-
-    public void setPrice(Double price) {
-        this.price = price;
-    }
 
 }

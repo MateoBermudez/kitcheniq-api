@@ -13,7 +13,6 @@ import com.uni.kitcheniq.models.Order;
 import org.springframework.beans.factory.annotation.Autowired;
 
 @Service
-
 public class OrderService implements IOrderService {
 
     @Autowired
@@ -35,8 +34,40 @@ public class OrderService implements IOrderService {
 
     @Override
     public Order createOrder(Order order) {
-        return orderRepository.save(order);
-        //debo hacer creación en cascada de orderItems y orderStatus
+
+        Order savedOrder = orderRepository.save(order);
+
+
+        OrderStatus initialStatus = new OrderStatus();
+        initialStatus.setStatus(OrderStatusType.PENDING);
+        initialStatus.setOrders(savedOrder);
+        initialStatus.setId(savedOrder.getId());
+        orderStatusRepository.save(initialStatus);
+
+        return savedOrder;
+    }
+
+    @Override
+    public OrderItem createOrderItem(OrderItem orderItem) {
+        // Verificar que existe la orden
+        Order order = orderRepository.findById(orderItem.getOrder().getId())
+                .orElseThrow(() -> new IllegalArgumentException("Orden no encontrada"));
+
+        // Guardar el nuevo OrderItem
+        OrderItem savedItem = orderItemRepository.save(orderItem);
+
+        // Actualizar OrderBill con todos los items actualizados
+        List<OrderItem> allItems = orderItemRepository.findByOrderId(order.getId());
+        try {
+            com.fasterxml.jackson.databind.ObjectMapper mapper = new com.fasterxml.jackson.databind.ObjectMapper();
+            String orderItemsJson = mapper.writeValueAsString(allItems);
+            order.setOrderBill(orderItemsJson);
+            orderRepository.save(order);
+        } catch (Exception e) {
+            throw new RuntimeException("Error al actualizar OrderBill", e);
+        }
+
+        return savedItem;
     }
 
     @Override
@@ -44,7 +75,6 @@ public class OrderService implements IOrderService {
         Order existingOrder = orderRepository.findById(id).orElse(null);
         if (existingOrder != null) {
             existingOrder.setOrderBill(order.getOrderBill());
-            existingOrder.setOrderDetails(order.getOrderDetails());
             existingOrder.setOrderPrice(order.getOrderPrice());
             return orderRepository.save(existingOrder);
         }
@@ -55,7 +85,6 @@ public class OrderService implements IOrderService {
     public Order cancelOrder(Long id) {
         Order existingOrder = orderRepository.findById(id).orElse(null);
         if (existingOrder != null) {
-            //existingOrder.setStatus("Cancelled");
             return orderRepository.save(existingOrder);
         }
         return null;
@@ -88,31 +117,38 @@ public class OrderService implements IOrderService {
     }
 
     @Override
-    public OrderItem createOrderItem(OrderItem orderItem) {
-        return orderItemRepository.save(orderItem);
-    }
-
-    @Override
     public OrderItem updateOrderItemByOrderId(Long OrderId, OrderItem orderItem) {
-        List<OrderItem> existingOrder = orderItemRepository.findByOrderId(OrderId);
-        if (existingOrder != null) {
-            for (OrderItem item : existingOrder) {
-                item.setComponent( orderItem.getComponent());
-                item.setQuantity(orderItem.getQuantity());
+        List<OrderItem> existingOrderItems = orderItemRepository.findByOrderId(OrderId);
+        if (existingOrderItems != null && !existingOrderItems.isEmpty()) {
+            for (OrderItem item : existingOrderItems) {
+                item.setComponent(orderItem.getComponent());
                 orderItemRepository.save(item);
             }
+            return existingOrderItems.get(0);
         }
         return null;
     }
 
     @Override
     public void deleteOrderItemByOrderId(Long OrderId, Long orderItemId) {
-        List<OrderItem> existingOrder = orderItemRepository.findByOrderId(OrderId);
-        if (existingOrder != null) {
+        List<OrderItem> existingOrderItems = orderItemRepository.findByOrderId(OrderId);
+        if (existingOrderItems != null && !existingOrderItems.isEmpty()) {
             orderItemRepository.deleteById(orderItemId);
 
+            // Actualizar OrderBill después de eliminar un item
+            Order order = orderRepository.findById(OrderId).orElse(null);
+            if (order != null) {
+                List<OrderItem> remainingItems = orderItemRepository.findByOrderId(OrderId);
+                try {
+                    com.fasterxml.jackson.databind.ObjectMapper mapper = new com.fasterxml.jackson.databind.ObjectMapper();
+                    String orderItemsJson = mapper.writeValueAsString(remainingItems);
+                    order.setOrderBill(orderItemsJson);
+                    orderRepository.save(order);
+                } catch (Exception e) {
+                    throw new RuntimeException("Error al actualizar OrderBill", e);
+                }
+            }
         }
-
     }
 
     @Override
@@ -145,8 +181,12 @@ public class OrderService implements IOrderService {
         // Si piden CANCELLED, cancelar la orden y guardar el nuevo estado
         if (status == OrderStatusType.CANCELLED) {
             cancelOrder(orderId);
-            OrderStatus cancelled = new OrderStatus();
+            Order order = orderRepository.findById(orderId).orElse(null);
+            if (order == null) return null;
+
+            OrderStatus cancelled = lastStatus.orElse(new OrderStatus());
             cancelled.setId(orderId);
+            cancelled.setOrders(order);
             cancelled.setStatus(status);
             return orderStatusRepository.save(cancelled);
         }
@@ -154,8 +194,12 @@ public class OrderService implements IOrderService {
         // Si no hay estado previo, solo permitir crear PENDING
         if (current == null) {
             if (status == OrderStatusType.PENDING) {
+                Order order = orderRepository.findById(orderId).orElse(null);
+                if (order == null) return null;
+
                 OrderStatus s = new OrderStatus();
                 s.setId(orderId);
+                s.setOrders(order);
                 s.setStatus(status);
                 return orderStatusRepository.save(s);
             }
@@ -176,8 +220,12 @@ public class OrderService implements IOrderService {
 
         OrderStatusType expectedNext = validNext.get(current);
         if (expectedNext != null && expectedNext == status) {
-            OrderStatus newStatus = new OrderStatus();
+            Order order = orderRepository.findById(orderId).orElse(null);
+            if (order == null) return null;
+
+            OrderStatus newStatus = lastStatus.orElse(new OrderStatus());
             newStatus.setId(orderId);
+            newStatus.setOrders(order);
             newStatus.setStatus(status);
             return orderStatusRepository.save(newStatus);
         }
@@ -185,6 +233,4 @@ public class OrderService implements IOrderService {
         // Transición no permitida
         return null;
     }
-
-
 }

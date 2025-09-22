@@ -7,6 +7,7 @@ import jakarta.persistence.*;
 public class MenuProductInventoryItem {
     @Id
     @Column(name = "id", nullable = false)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(name = "quantity", nullable = false)

@@ -49,14 +49,14 @@ public class OrderService implements IOrderService {
 
     @Override
     public OrderItem createOrderItem(OrderItem orderItem) {
-        // Verificar que existe la orden
+
         Order order = orderRepository.findById(orderItem.getOrder().getId())
                 .orElseThrow(() -> new IllegalArgumentException("Orden no encontrada"));
 
-        // Guardar el nuevo OrderItem
+
         OrderItem savedItem = orderItemRepository.save(orderItem);
 
-        // Actualizar OrderBill con todos los items actualizados
+
         List<OrderItem> allItems = orderItemRepository.findByOrderId(order.getId());
         try {
             com.fasterxml.jackson.databind.ObjectMapper mapper = new com.fasterxml.jackson.databind.ObjectMapper();
@@ -230,7 +230,7 @@ public class OrderService implements IOrderService {
             return orderStatusRepository.save(newStatus);
         }
 
-        // Transición no permitida
+
         return null;
     }
 }

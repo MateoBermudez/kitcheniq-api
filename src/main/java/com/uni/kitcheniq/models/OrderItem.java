@@ -22,6 +22,9 @@ public class OrderItem {
     @JoinColumn(name = "order_id")
     private Order order;
 
+    @Column(name = "quantity", nullable = false)
+    private Integer quantity;
+
     public Long getId() {
         return id;
     }

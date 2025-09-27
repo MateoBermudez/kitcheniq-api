@@ -34,7 +34,7 @@ public interface PurchaseOrderRepository extends JpaRepository<PurchaseOrder, Lo
     @Query("SELECT po.totalAmount FROM PurchaseOrder po WHERE po.id = :id")
     double getTotalPriceById(Long id);
 
-    @Query("SELECT po FROM PurchaseOrder po WHERE po.supplier.id = :supplierId")
+    @Query("SELECT po FROM PurchaseOrder po LEFT JOIN FETCH po.items WHERE po.supplier.id = :supplierId")
     List<PurchaseOrder> getPurchaseOrderBySupplierId(String supplierId);
 
 }

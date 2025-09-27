@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 @Service
 public class SupplierService {
@@ -39,7 +40,6 @@ public class SupplierService {
         if (order == null) {
             return null;
         }
-        order.setItems(purchaseOrderItemRepository.getItemsByOrderId(orderId));
         PurchaseOrderDTO purchaseOrderDTO = purchaseOrderMapper.toDTO(order);
         return purchaseOrderDTO;
     }
@@ -83,5 +83,15 @@ public class SupplierService {
             orderDTOS.add(purchaseOrderMapper.toDTO(order));
         }
         return orderDTOS;
+    }
+
+    public String finishOrder (Long orderId) {
+        PurchaseOrder order = purchaseOrderRepository.findPurchaseOrderByIdWithItems(orderId);
+        if (order.getTotalAmount() == 0) {
+            purchaseOrderRepository.updateStatusById(orderId, PurchaseOrderType.CANCELLED);
+            return "The order will be marked as CANCELLED as no items were delivered.";
+        }
+        purchaseOrderRepository.updateStatusById(orderId, PurchaseOrderType.DELIVERED);
+        return "The order has been DELIVERED.";
     }
 }

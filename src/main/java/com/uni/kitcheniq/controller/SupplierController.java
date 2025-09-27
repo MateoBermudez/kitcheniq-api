@@ -3,6 +3,7 @@ package com.uni.kitcheniq.controller;
 import com.uni.kitcheniq.dto.PurchaseOrderDTO;
 import com.uni.kitcheniq.dto.PurchaseOrderItemDTO;
 import com.uni.kitcheniq.enums.PurchaseOrderType;
+import com.uni.kitcheniq.service.PdfService;
 import com.uni.kitcheniq.service.SupplierService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -15,10 +16,12 @@ import java.util.List;
 public class SupplierController {
 
     private final SupplierService supplierService;
+    private final PdfService pdfService;
 
     @Autowired
-    public SupplierController(SupplierService supplierService) {
+    public SupplierController(SupplierService supplierService, PdfService pdfService) {
         this.supplierService = supplierService;
+        this.pdfService = pdfService;
     }
 
     @PostMapping("/purchase-order")
@@ -44,13 +47,20 @@ public class SupplierController {
 
     @PostMapping("/finish-dispatch")
     public ResponseEntity<String> finishOrderDispatch(@RequestParam Long purchaseOrderDTO) {
-        supplierService.updateStatus(PurchaseOrderType.DELIVERED, purchaseOrderDTO);
-        return ResponseEntity.ok("Order has been delivered.");
+        return ResponseEntity.ok(supplierService.finishOrder(purchaseOrderDTO));
     }
 
     @GetMapping("/get-orders")
     public ResponseEntity<List<PurchaseOrderDTO>> getOrders(@RequestParam String supplierId){
         List<PurchaseOrderDTO> orders = supplierService.getOrders(supplierId);
         return ResponseEntity.ok(orders);
+    }
+
+    @GetMapping("/get-order-pdf")
+    public ResponseEntity<byte[]> getOrderPdf(@RequestParam Long orderId) {
+        byte[] pdfBytes =  pdfService.generatePurchaseOrderPdf(orderId);
+        return ResponseEntity.ok()
+                .header("Content-Disposition", "attachment; filename=purchase_order_" + orderId + ".pdf")
+                .body(pdfBytes);
     }
 }

@@ -12,9 +12,6 @@ import java.util.Set;
 @Repository
 public interface PurchaseOrderItemRepository extends JpaRepository<PurchaseOrderItem,Long> {
 
-    @Query("SELECT poi FROM PurchaseOrderItem poi WHERE poi.purchaseOrder.id = :orderId")
-    Set<PurchaseOrderItem> getItemsByOrderId(Long orderId);
-
     @Query("SELECT poi FROM PurchaseOrderItem poi WHERE poi.inventoryItem.id = :id AND poi.purchaseOrder.id = :orderId")
     PurchaseOrderItem getItemById(Long id, Long orderId);
 

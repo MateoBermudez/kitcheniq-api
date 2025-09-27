@@ -17,6 +17,7 @@ public class PurchaseOrderItemMapper {
         return PurchaseOrderItemDTO.builder()
                 .OrderId(purchaseOrderItem.getPurchaseOrder().getId())
                 .itemId(purchaseOrderItem.getInventoryItem().getId())
+                .itemName(purchaseOrderItem.getInventoryItem().getName())
                 .quantity(purchaseOrderItem.getQuantity())
                 .unitPrice(purchaseOrderItem.getUnitPrice())
                 .subTotal(purchaseOrderItem.getSubTotalPrice())

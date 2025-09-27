@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 @Builder
 public class PurchaseOrderItemDTO {
     private long OrderId;
+    private String itemName;
     private long itemId;
     private int quantity;
     private double unitPrice;

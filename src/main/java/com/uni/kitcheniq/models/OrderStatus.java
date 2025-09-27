@@ -20,7 +20,12 @@ public class OrderStatus {
     private Employee employeeId;
 
     @Column(name = "status")
-    OrderStatusType status;
+    @Enumerated(EnumType.ORDINAL)
+    private OrderStatusType status;
+
+    @Version
+    @Column(name = "version")
+    private Integer version;
 
     public Long getId() {
         return id;
@@ -54,4 +59,11 @@ public class OrderStatus {
         this.status = status;
     }
 
+    public Integer getVersion() {
+        return version;
+    }
+
+    public void setVersion(Integer version) {
+        this.version = version;
+    }
 }

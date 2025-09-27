@@ -14,6 +14,8 @@ public class Order {
 
     @Column(name = "order_bill", nullable = false)
     private String orderBill;
+    @Column(name = "order_details")
+    private String orderDetails;
 
 
     @Column(name = "order_date", nullable = false)
@@ -37,6 +39,15 @@ public class Order {
     public void setOrderBill(String orderBill) {
         this.orderBill = orderBill;
     }
+
+    public String getOrderDetails() {
+        return orderDetails;
+    }
+
+    public void setOrderDetails(String orderDetails) {
+        this.orderDetails = orderDetails;
+    }
+
 
 
     public LocalDate getOrderDate() {

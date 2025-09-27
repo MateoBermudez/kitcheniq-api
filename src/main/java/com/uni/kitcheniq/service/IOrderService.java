@@ -1,6 +1,5 @@
 package com.uni.kitcheniq.service;
 
-
 import com.uni.kitcheniq.enums.OrderStatusType;
 import com.uni.kitcheniq.models.Order;
 import com.uni.kitcheniq.models.OrderItem;
@@ -20,4 +19,5 @@ public interface IOrderService {
     void deleteOrderItemByOrderId(Long OrderId, Long orderItemId);
     List<Order> getOrdersByStatus(OrderStatusType status);
     OrderStatus updateOrderStatus(Long orderId, OrderStatusType status);
+    Order createOrderWithInitialItem(String employeeId, Long menuComponentId, Integer quantity);
 }

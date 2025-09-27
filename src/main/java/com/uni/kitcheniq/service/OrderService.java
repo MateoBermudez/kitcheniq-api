@@ -85,7 +85,7 @@ public class OrderService implements IOrderService {
         if (employeeId != null && !employeeId.isEmpty()) {
             Employee employee = employeeRepository.findById(employeeId).orElse(null);
             if (employee != null) {
-                initialStatus.setIdEmployee(employee);
+                initialStatus.setEmployeeId(employee);
             }
         }
 

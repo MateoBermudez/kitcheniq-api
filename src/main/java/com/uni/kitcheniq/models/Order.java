@@ -1,9 +1,13 @@
 package com.uni.kitcheniq.models;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.time.LocalDate;
 
+@Setter
+@Getter
 @Entity
 @Table(name = "orders")
 public class Order {
@@ -16,7 +20,6 @@ public class Order {
     private String orderBill;
     @Column(name = "order_details")
     private String orderDetails;
-
 
     @Column(name = "order_date", nullable = false)
     private LocalDate orderDate;
@@ -47,8 +50,6 @@ public class Order {
     public void setOrderDetails(String orderDetails) {
         this.orderDetails = orderDetails;
     }
-
-
 
     public LocalDate getOrderDate() {
         return orderDate;

@@ -1,34 +1,49 @@
 package com.uni.kitcheniq.models;
 
+
+import com.uni.kitcheniq.enums.PurchaseOrderType;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
-import java.time.Instant;
+import java.time.LocalDateTime;
+import java.util.Set;
 
-@Getter
-@Setter
 @Entity
 @Table(name = "purchase_orders")
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class PurchaseOrder {
+
     @Id
-    @Column(name = "id", nullable = false)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(unique = true, nullable = false)
     private Long id;
 
-    @Column(name = "created_at")
-    private Instant createdAt;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "supplier_id", nullable = false)
+    private Supplier supplier;
 
+    @Enumerated(EnumType.ORDINAL)
     @Column(name = "status", nullable = false)
-    private String status;
+    PurchaseOrderType status;
 
     @Column(name = "total_amount", nullable = false)
     private Double totalAmount;
 
-    @Column(name = "updated_at")
-    private Instant updatedAt;
+    @OneToMany(mappedBy = "purchaseOrder", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
+    private Set<PurchaseOrderItem> items;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "supplier_id", nullable = false)
-    private Supplier supplier;
+    @CreationTimestamp
+    private LocalDateTime createdAt;
+
+    @UpdateTimestamp
+    private LocalDateTime updatedAt;
+
 
 }

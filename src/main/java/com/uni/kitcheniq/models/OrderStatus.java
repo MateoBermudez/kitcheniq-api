@@ -21,9 +21,14 @@ public class OrderStatus {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_employee")
-    private Employee idEmployee;
+    private Employee employeeId;
 
     @Column(name = "status")
-    OrderStatusType status;
+    @Enumerated(EnumType.ORDINAL)
+    private OrderStatusType status;
+
+    @Version
+    @Column(name = "version")
+    private Integer version;
 
 }

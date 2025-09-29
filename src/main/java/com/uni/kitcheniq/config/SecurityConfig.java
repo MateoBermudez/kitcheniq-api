@@ -28,10 +28,6 @@ public class SecurityConfig {
                         authRequest
                                 // Añadir barras iniciales en los patrones
                                 .requestMatchers("/kitcheniq/api/v1/auth/**").permitAll()
-                                .requestMatchers("/kitcheniq/api/v1/order/**").permitAll()
-                                .requestMatchers("/kitcheniq/api/v1/menu/**").permitAll()
-                                .requestMatchers("/kitcheniq/api/v1/demo/**").permitAll()
-                                .requestMatchers("/kitcheniq/api/v1/orders/**").permitAll()
                                 .anyRequest().authenticated()
                 )
                 .sessionManagement(sessionManagement ->

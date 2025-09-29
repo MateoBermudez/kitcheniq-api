@@ -1,14 +1,13 @@
 package com.uni.kitcheniq.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
 
-@Data
-@AllArgsConstructor
-@NoArgsConstructor
+@Getter
+@Setter
 public class CreateOrderDTO {
     private String employeeId;
     private Long menuComponentId;
-    private Integer quantity = 1;
+    private Integer quantity;
+    private Integer tableNumber; // nuevo
 }

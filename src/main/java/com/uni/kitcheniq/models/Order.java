@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.time.LocalDate;
+import java.time.OffsetDateTime;
 
 @Setter
 @Getter
@@ -12,59 +12,36 @@ import java.time.LocalDate;
 @Table(name = "orders")
 public class Order {
     @Id
-    @Column(name = "id", nullable = false)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id", nullable = false)
     private Long id;
 
     @Column(name = "order_bill", nullable = false)
     private String orderBill;
+
     @Column(name = "order_details")
     private String orderDetails;
 
     @Column(name = "order_date", nullable = false)
-    private LocalDate orderDate;
+    private java.time.LocalDate orderDate;
 
     @Column(name = "order_price", nullable = false)
     private Double orderPrice;
 
-    public Long getId() {
-        return id;
-    }
+    @Column(name = "table_number", nullable = false)
+    private Integer tableNumber;
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+    @Column(name = "request_time", nullable = false, columnDefinition = "TIMESTAMPTZ")
+    private OffsetDateTime requestTime;
 
-    public String getOrderBill() {
-        return orderBill;
-    }
+    @Column(name = "deliver_time", columnDefinition = "TIMESTAMPTZ")
+    private OffsetDateTime deliverTime;
 
-    public void setOrderBill(String orderBill) {
-        this.orderBill = orderBill;
-    }
-
-    public String getOrderDetails() {
-        return orderDetails;
-    }
-
-    public void setOrderDetails(String orderDetails) {
-        this.orderDetails = orderDetails;
-    }
-
-    public LocalDate getOrderDate() {
-        return orderDate;
-    }
-
-    public void setOrderDate(LocalDate orderDate) {
-        this.orderDate = orderDate;
-    }
-
-    public Double getOrderPrice() {
-        return orderPrice;
-    }
-
-    public void setOrderPrice(Double orderPrice) {
-        this.orderPrice = orderPrice;
+    @PrePersist
+    public void prePersist() {
+        if (this.requestTime == null) {
+            this.requestTime = OffsetDateTime.now();
+        }
     }
 
 }

@@ -1,10 +1,7 @@
 package com.uni.kitcheniq.dto;
 
 import com.uni.kitcheniq.enums.OrderStatusType;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDateTime;
 
@@ -12,13 +9,13 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-
 public class OrderDTO {
     private long orderId;
     private double totalPrice;
     private String orderBill;
     private LocalDateTime orderDate;
-
     private OrderStatusType orderStatus;
-
+    private Integer tableNumber;
+    private String requestTime;
+    private String deliverTime;
 }

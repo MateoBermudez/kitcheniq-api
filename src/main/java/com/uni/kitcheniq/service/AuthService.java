@@ -3,6 +3,7 @@ package com.uni.kitcheniq.service;
 import com.uni.kitcheniq.dto.AuthResponse;
 import com.uni.kitcheniq.dto.LoginRequest;
 import com.uni.kitcheniq.dto.RegisterRequest;
+import com.uni.kitcheniq.exception.InvalidCredentialsException;
 import com.uni.kitcheniq.models.Employee;
 import com.uni.kitcheniq.models.Supplier;
 import com.uni.kitcheniq.repository.EmployeeRepository;
@@ -27,8 +28,7 @@ public class AuthService {
     private final AuthenticationManager authenticationManager;
 
     public AuthResponse login(LoginRequest Request) {
-        authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(Request.getUserId(),
-                Request.getPassword()));
+
         UserDetails user;
         Optional<Employee> employee = employeeRepository.findById(Request.getUserId());
         if (employee.isPresent()) {
@@ -39,8 +39,15 @@ public class AuthService {
                 user = supplier.get();
             }
             else {
-                throw new RuntimeException("User not found");
+                throw new InvalidCredentialsException("User not found");
             }
+        }
+
+        try {
+            authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(Request.getUserId(),
+                    Request.getPassword()));
+        } catch (org.springframework.security.authentication.BadCredentialsException e) {
+            throw new InvalidCredentialsException("Incorrect password");
         }
 
         String token = jwtService.getToken(user);

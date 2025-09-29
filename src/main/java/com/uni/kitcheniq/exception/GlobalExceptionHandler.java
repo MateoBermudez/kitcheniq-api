@@ -33,4 +33,17 @@ public class GlobalExceptionHandler {
 
         return ResponseEntity.status(400).body(errorMessage);
     }
+
+    @ExceptionHandler(InvalidCredentialsException.class)
+    public ResponseEntity<ErrorMessage> handleInvalidCredentialsException(InvalidCredentialsException ex, HttpServletRequest request) {
+        ErrorMessage errorMessage = new ErrorMessage();
+        errorMessage.setMessage(ex.getMessage());
+        errorMessage.setCause(ex.getCause() != null ? ex.getCause().toString() : null);
+        errorMessage.setStatusCode(401);
+        errorMessage.setTimestamp(System.currentTimeMillis());
+        errorMessage.setPath(request.getRequestURI());
+        errorMessage.setErrorCode(ex.getMessage());
+
+        return ResponseEntity.status(401).body(errorMessage);
+    }
 }

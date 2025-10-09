@@ -16,7 +16,7 @@ public class Order {
     @Column(name = "id", nullable = false)
     private Long id;
 
-    @Column(name = "order_bill", nullable = false)
+    @Column(name = "order_bill", nullable = false, columnDefinition = "TEXT")
     private String orderBill;
 
     @Column(name = "order_details")

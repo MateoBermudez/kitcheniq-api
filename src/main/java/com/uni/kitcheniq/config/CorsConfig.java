@@ -15,6 +15,7 @@ public class CorsConfig {
             public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("/*")
                         .allowedOrigins("http://localhost:5173")
+                        .allowedOrigins("https://kitcheniq.vercel.app")
                         .allowedMethods("")
                         .allowedHeaders("*")
                         .allowCredentials(true);

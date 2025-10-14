@@ -1,0 +1,52 @@
+name: KitchenIQ CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main, master, develop ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Build Docker image
+        run: docker build -t kitcheniq:latest .
+
+      - name: Start container and test startup
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+        run: |
+          # Run container with DNS flag
+          docker run -d \
+            --name kitcheniq-app \
+            -p 5000:5000 \
+            -e SPRING_PROFILES_ACTIVE=prod \
+            -e JAVA_OPTS="-Xmx512m -Xms256m" \
+            -e "DATABASE_URL=$DATABASE_URL" \
+            --dns=8.8.8.8 \
+            kitcheniq:latest
+          
+          # Wait and test container health
+          echo "Waiting for application to start..."
+          sleep 30
+          
+          # Check container status
+          docker ps -a
+          docker logs kitcheniq-app
+          
+          # Test health endpoint
+          curl -v http://localhost:5000/actuator/health
+
+      - name: Deploy to Render
+        if: success()
+        run: |
+          curl -X POST "$RENDER_DEPLOY_HOOK"
+        env:
+          RENDER_DEPLOY_HOOK: ${{ secrets.RENDER_DEPLOY_HOOK }}

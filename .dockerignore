@@ -1,0 +1,79 @@
+# ============================================================================
+# .dockerignore - Exclude unnecessary files from Docker context
+# ============================================================================
+
+# Build outputs
+target/
+!target/*.jar
+
+# IDE configurations
+.idea/
+.vscode/
+.eclipse/
+*.iml
+*.ipr
+*.iws
+.classpath
+.project
+.settings/
+
+# OS files
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*~
+
+# Git
+.git/
+.gitignore
+.gitattributes
+
+# Docker
+Dockerfile*
+.dockerignore
+docker-compose*.yml
+
+# Documentation
+README.md
+HELP.md
+LICENSE
+*.md
+docs/
+
+# Logs
+logs/
+*.log
+
+# Local configuration
+*.env
+.env.*
+application-local.properties
+application-dev.properties
+
+# Temp files
+tmp/
+temp/
+*.tmp
+
+# Node modules (if present)
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# Maven wrapper
+.mvn/
+mvnw
+mvnw.cmd
+
+# Tests
+src/test/
+**/test/
+
+# Backup files
+*.bak
+*.backup
+*.old
+
+# Caches
+.cache/

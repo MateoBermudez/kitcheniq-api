@@ -82,9 +82,7 @@ HEALTHCHECK --interval=30s --timeout=3s --start-period=40s --retries=3 \
 # Entrypoint
 # ----------------------------------------------------------------------------
 ENTRYPOINT ["dumb-init", "--"]
-CMD ["sh", "-c", "java ${JAVA_OPTS} \
-    ${DATABASE_URL:+-Dspring.datasource.url=${DATABASE_URL}} \
-    -jar app.jar"]
+CMD ["sh", "-c", "java ${JAVA_OPTS} -jar app.jar"]
 
 # ============================================================================
 # Notes:

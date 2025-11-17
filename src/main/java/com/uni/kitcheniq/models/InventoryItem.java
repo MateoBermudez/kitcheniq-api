@@ -1,12 +1,15 @@
 package com.uni.kitcheniq.models;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
+import org.springframework.beans.factory.annotation.Autowired;
 
 @Setter
 @Getter
 @Entity
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @Table(name = "inventory_item")
 public class InventoryItem {
     @Id

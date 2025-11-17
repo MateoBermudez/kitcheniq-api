@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
+import org.springframework.web.bind.annotation.RequestBody;
 
 @Repository
 public interface InventoryItemRepository extends JpaRepository<InventoryItem, Long> {
@@ -14,4 +15,6 @@ public interface InventoryItemRepository extends JpaRepository<InventoryItem, Lo
     @Modifying
     @Query("UPDATE InventoryItem i SET i.quantity = i.quantity + :newQuantity WHERE i.id = :itemId")
     void updateItemQuantity(long itemId, int newQuantity);
+
+    InventoryItem findById(long itemId);
 }

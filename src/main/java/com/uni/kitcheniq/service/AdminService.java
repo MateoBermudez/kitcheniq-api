@@ -38,7 +38,9 @@ public class AdminService {
             throw new NoItemFoundException("Inventory item data is missing");
         }
         InventoryItem item = inventoryItemMapper.toInventoryItem(inventoryItemDTO);
-
+        if (inventoryItemDTO.getPrice() == null) {
+            throw new IllegalArgumentException("Price is required");
+        }
         if (item.getSupplierid() == null) {
             throw new SupplierNotFoundException("Supplier data is missing");
         }
@@ -61,5 +63,17 @@ public class AdminService {
         PurchaseOrder purchaseOrder = purchaseOrderMapper.toEntity(purchaseOrderDTO);
         purchaseOrderRepository.save(purchaseOrder);
         return ("Hola");
+    }
+
+    public List<InventoryItemDTO> searchItemsByName (String name) {
+        if (name == null || name.trim().isEmpty()) {
+            return getAllInventoryItems();
+        }
+        List<InventoryItem> items = inventoryItemRepository.findByNameContainingIgnoreCase(name.trim());
+        List<InventoryItemDTO> result = new ArrayList<>();
+        for (InventoryItem item : items) {
+            result.add(inventoryItemMapper.toInventoryItemDTO(item));
+        }
+        return result;
     }
 }

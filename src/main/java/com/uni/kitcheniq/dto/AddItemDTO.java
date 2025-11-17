@@ -10,4 +10,5 @@ import lombok.NoArgsConstructor;
 public class AddItemDTO {
     private Long menuComponentId;
     private Integer quantity = 1;
+
 }

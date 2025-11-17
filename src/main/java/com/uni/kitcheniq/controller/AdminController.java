@@ -37,4 +37,10 @@ public class AdminController {
         adminService.createPurchaseOrder(purchaseOrderDTO);
         return ResponseEntity.ok("OK");
     }
+
+    @GetMapping("/inventory-search")
+    public ResponseEntity<List<InventoryItemDTO>> searchInventoryItems(
+            @RequestParam(name = "name", required = false) String name) {
+        return ResponseEntity.ok(adminService.searchItemsByName(name));
+    }
 }

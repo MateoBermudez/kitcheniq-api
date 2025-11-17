@@ -28,6 +28,7 @@ public class InventoryItemMapper {
                 .id(inventoryItemDTO.getId())
                 .name(inventoryItemDTO.getName())
                 .quantity(inventoryItemDTO.getQuantity())
+                .price(inventoryItemDTO.getPrice())
                 .build();
 
         Optional<Supplier> supplier = supplierRepository.findById(inventoryItemDTO.getSupplier());
@@ -50,6 +51,7 @@ public class InventoryItemMapper {
                 .name(inventoryItem.getName())
                 .quantity(inventoryItem.getQuantity())
                 .supplier(inventoryItem.getSupplierid() != null ? inventoryItem.getSupplierid().getId().toString() : null)
+                .price(inventoryItem.getPrice())
                 .build();
     }
 }

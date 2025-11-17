@@ -8,6 +8,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.bind.annotation.RequestBody;
 
+import java.util.List;
+
 @Repository
 public interface InventoryItemRepository extends JpaRepository<InventoryItem, Long> {
 
@@ -17,4 +19,5 @@ public interface InventoryItemRepository extends JpaRepository<InventoryItem, Lo
     void updateItemQuantity(long itemId, int newQuantity);
 
     InventoryItem findById(long itemId);
+    List<InventoryItem> findByNameContainingIgnoreCase(String name);
 }

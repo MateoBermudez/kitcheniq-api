@@ -27,4 +27,9 @@ public interface PurchaseOrderItemRepository extends JpaRepository<PurchaseOrder
             "AND poi.purchaseOrder.id = :orderId")
     void updateSubtotalInItemOfOrderId(Long itemId, Long orderId, double subtotal);
 
+    @Transactional
+    @Modifying
+    @Query("DELETE FROM PurchaseOrderItem poi WHERE poi.inventoryItem.id = :itemId AND poi.purchaseOrder.id = :orderId")
+    void deleteItemFromOrder(Long itemId, Long orderId);
+
 }

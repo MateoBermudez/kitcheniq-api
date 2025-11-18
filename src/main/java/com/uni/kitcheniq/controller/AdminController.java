@@ -2,6 +2,9 @@ package com.uni.kitcheniq.controller;
 
 import com.uni.kitcheniq.dto.InventoryItemDTO;
 import com.uni.kitcheniq.dto.PurchaseOrderDTO;
+import com.uni.kitcheniq.dto.PurchaseOrderItemDTO;
+import com.uni.kitcheniq.dto.SupplierDTO;
+import com.uni.kitcheniq.models.PurchaseOrder;
 import com.uni.kitcheniq.service.AdminService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -32,9 +35,33 @@ public class AdminController {
         return ResponseEntity.ok(items);
     }
 
-    @PostMapping("/create-purchase-order")
-    public ResponseEntity<String> createPurchaseOrder(@RequestBody PurchaseOrderDTO purchaseOrderDTO) {
-        adminService.createPurchaseOrder(purchaseOrderDTO);
-        return ResponseEntity.ok("OK");
+    @PostMapping("/initialize-purchase-order")
+    public ResponseEntity<PurchaseOrderDTO> createPurchaseOrder(@RequestBody SupplierDTO supplierDTO) {
+        PurchaseOrderDTO order = adminService.createPurchaseOrder(supplierDTO);
+        return ResponseEntity.ok(order);
+    }
+
+    @PostMapping("/add-items-to-order")
+    public ResponseEntity<PurchaseOrderDTO> addItemsToPurchaseOrder(@RequestBody PurchaseOrderItemDTO purchaseOrderItemDTO) {
+        PurchaseOrderDTO order = adminService.addItemsToOrder(purchaseOrderItemDTO);
+        return ResponseEntity.ok(order);
+    }
+
+    @PostMapping("/eliminate-items-from-order")
+    public ResponseEntity<PurchaseOrderDTO> eliminateItemsFromOrder(@RequestBody PurchaseOrderItemDTO purchaseOrderItemDTO) {
+        PurchaseOrderDTO order = adminService.eliminateItemsFromOrder(purchaseOrderItemDTO);
+        return ResponseEntity.ok(order);
+    }
+
+    @PostMapping("/cancel-purchase-order")
+    public ResponseEntity<String> cancelPurchaseOrder(@RequestParam Long orderId) {
+        String message = adminService.cancelPurchaseOrder(orderId);
+        return ResponseEntity.ok(message);
+    }
+
+    @PostMapping("/finalize-purchase-order")
+    public ResponseEntity<PurchaseOrderDTO> finalizePurchaseOrder(@RequestParam Long orderId) {
+        PurchaseOrderDTO order = adminService.finalizePurchaseOrder(orderId);
+        return ResponseEntity.ok(order);
     }
 }

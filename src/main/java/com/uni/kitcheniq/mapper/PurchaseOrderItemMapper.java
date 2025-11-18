@@ -4,6 +4,7 @@ import com.uni.kitcheniq.dto.PurchaseOrderItemDTO;
 import com.uni.kitcheniq.models.PurchaseOrder;
 import com.uni.kitcheniq.models.PurchaseOrderItem;
 import com.uni.kitcheniq.repository.InventoryItemRepository;
+import com.uni.kitcheniq.repository.PurchaseOrderRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -14,10 +15,12 @@ import java.util.Set;
 public class PurchaseOrderItemMapper {
 
     private final InventoryItemRepository inventoryItemRepository;
+    private final PurchaseOrderRepository purchaseOrderRepository;
 
     @Autowired
-    public PurchaseOrderItemMapper(InventoryItemRepository inventoryItemRepository) {
+    public PurchaseOrderItemMapper(InventoryItemRepository inventoryItemRepository, PurchaseOrderRepository purchaseOrderRepository) {
         this.inventoryItemRepository = inventoryItemRepository;
+        this.purchaseOrderRepository = purchaseOrderRepository;
     }
 
     public PurchaseOrderItemDTO toDTO(PurchaseOrderItem purchaseOrderItem) {
@@ -25,7 +28,7 @@ public class PurchaseOrderItemMapper {
             return null;
         }
         return PurchaseOrderItemDTO.builder()
-                .OrderId(purchaseOrderItem.getPurchaseOrder().getId())
+                .orderId(purchaseOrderItem.getPurchaseOrder().getId())
                 .itemId(purchaseOrderItem.getInventoryItem().getId())
                 .itemName(purchaseOrderItem.getInventoryItem().getName())
                 .quantity(purchaseOrderItem.getQuantity())
@@ -45,16 +48,19 @@ public class PurchaseOrderItemMapper {
         return purchaseOrderItemDTOS;
     }
 
-    public PurchaseOrderItem toEntity(PurchaseOrderItemDTO purchaseOrderItem) {
-        if (purchaseOrderItem == null) {
+    public PurchaseOrderItem toEntity(PurchaseOrderItemDTO purchaseOrder) {
+        if (purchaseOrder == null) {
             return null;
         }
-        return PurchaseOrderItem.builder()
-                .quantity(purchaseOrderItem.getQuantity())
-                .unitPrice(purchaseOrderItem.getUnitPrice())
-                .subTotalPrice(purchaseOrderItem.getSubTotal())
-                .inventoryItem(inventoryItemRepository.findById(purchaseOrderItem.getItemId()))
+
+        PurchaseOrderItem purchaseOrderItem = PurchaseOrderItem.builder()
+                .purchaseOrder(purchaseOrderRepository.findPurchaseOrderById(purchaseOrder.getOrderId()))
+                .quantity(purchaseOrder.getQuantity())
+                .unitPrice(purchaseOrder.getUnitPrice())
+                .subTotalPrice(purchaseOrder.getSubTotal())
+                .inventoryItem(inventoryItemRepository.findById(purchaseOrder.getItemId()))
                 .build();
+        return purchaseOrderItem;
     }
 
     public PurchaseOrder toEntitySet(Set<PurchaseOrderItemDTO> purchaseOrderItemDTOS, PurchaseOrder purchaseOrder) {

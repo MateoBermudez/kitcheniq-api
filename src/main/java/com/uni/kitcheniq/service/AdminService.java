@@ -38,7 +38,6 @@ public class AdminService {
     private final PurchaseOrderItemRepository purchaseOrderItemRepository;
     private final EntityManager em;
 
-
     public String addInventoryItem(InventoryItemDTO inventoryItemDTO) {
         if (inventoryItemDTO == null) {
             throw new NoItemFoundException("Inventory item data is missing");
@@ -62,12 +61,6 @@ public class AdminService {
 
         return itemDTOs;
     }
-
-    /*public String createPurchaseOrder(PurchaseOrderDTO purchaseOrderDTO) {
-        PurchaseOrder purchaseOrder = purchaseOrderMapper.toEntity(purchaseOrderDTO);
-        purchaseOrderRepository.save(purchaseOrder);
-        return ("Purchase order created successfully");
-    }*/
 
     public PurchaseOrderDTO createPurchaseOrder(SupplierDTO supplierDTO) {
         PurchaseOrder purchaseOrder = PurchaseOrder.builder()
@@ -133,5 +126,15 @@ public class AdminService {
         return "Purchase order cancelled successfully";
     }
 
-
+    public List<InventoryItemDTO> searchItemsByName (String name) {
+        if (name == null || name.trim().isEmpty()) {
+            return getAllInventoryItems();
+        }
+        List<InventoryItem> items = inventoryItemRepository.findByNameContainingIgnoreCase(name.trim());
+        List<InventoryItemDTO> result = new ArrayList<>();
+        for (InventoryItem item : items) {
+            result.add(inventoryItemMapper.toInventoryItemDTO(item));
+        }
+        return result;
+    }
 }

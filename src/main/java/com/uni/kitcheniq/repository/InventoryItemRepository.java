@@ -20,4 +20,7 @@ public interface InventoryItemRepository extends JpaRepository<InventoryItem, Lo
 
     InventoryItem findById(long itemId);
     List<InventoryItem> findByNameContainingIgnoreCase(String name);
+
+    @Query("SELECT i FROM InventoryItem i WHERE i.supplierid.id = :supplierId")
+    List<InventoryItem> getInventoryItemsBySupplierId(String supplierId);
 }

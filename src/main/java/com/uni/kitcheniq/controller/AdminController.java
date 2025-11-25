@@ -1,9 +1,6 @@
 package com.uni.kitcheniq.controller;
 
-import com.uni.kitcheniq.dto.InventoryItemDTO;
-import com.uni.kitcheniq.dto.PurchaseOrderDTO;
-import com.uni.kitcheniq.dto.PurchaseOrderItemDTO;
-import com.uni.kitcheniq.dto.SupplierDTO;
+import com.uni.kitcheniq.dto.*;
 import com.uni.kitcheniq.models.PurchaseOrder;
 import com.uni.kitcheniq.service.AdminService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -69,5 +66,29 @@ public class AdminController {
     public ResponseEntity<List<InventoryItemDTO>> searchInventoryItems(
             @RequestParam(name = "name", required = false) String name) {
         return ResponseEntity.ok(adminService.searchItemsByName(name));
+    }
+
+    @GetMapping("/employees-list")
+    public ResponseEntity<List<EmployeeDTO>> getEmployeesList() {
+        List<EmployeeDTO> employees = adminService.getAllEmployees();
+        return ResponseEntity.ok(employees);
+    }
+
+    @PostMapping("/delete-employee")
+    public ResponseEntity<String> deleteEmployee(@RequestParam String employeeId) {
+        String response = adminService.deleteEmployee(employeeId);
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/supplier-list")
+    public ResponseEntity<List<SupplierDTO>> getSuppliersList() {
+        List<SupplierDTO> suppliers = adminService.getAllSuppliers();
+        return ResponseEntity.ok(suppliers);
+    }
+
+    @GetMapping("/supplier-inventory-items")
+    public ResponseEntity<List<InventoryItemDTO>> getInventoryItemsBySupplierId(@RequestParam String supplierId) {
+        List<InventoryItemDTO> items = adminService.getInventoryItemsBySupplierId(supplierId);
+        return ResponseEntity.ok(items);
     }
 }

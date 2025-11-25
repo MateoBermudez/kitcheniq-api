@@ -1,23 +1,13 @@
 package com.uni.kitcheniq.service;
 
-import com.uni.kitcheniq.dto.InventoryItemDTO;
-import com.uni.kitcheniq.dto.PurchaseOrderDTO;
-import com.uni.kitcheniq.dto.PurchaseOrderItemDTO;
-import com.uni.kitcheniq.dto.SupplierDTO;
+import com.uni.kitcheniq.dto.*;
 import com.uni.kitcheniq.enums.PurchaseOrderType;
 import com.uni.kitcheniq.exception.NoItemFoundException;
+import com.uni.kitcheniq.exception.NotEmployees;
 import com.uni.kitcheniq.exception.SupplierNotFoundException;
-import com.uni.kitcheniq.mapper.InventoryItemMapper;
-import com.uni.kitcheniq.mapper.PurchaseOrderItemMapper;
-import com.uni.kitcheniq.mapper.PurchaseOrderMapper;
-import com.uni.kitcheniq.models.InventoryItem;
-import com.uni.kitcheniq.models.PurchaseOrder;
-import com.uni.kitcheniq.models.PurchaseOrderItem;
-import com.uni.kitcheniq.models.Supplier;
-import com.uni.kitcheniq.repository.InventoryItemRepository;
-import com.uni.kitcheniq.repository.PurchaseOrderItemRepository;
-import com.uni.kitcheniq.repository.PurchaseOrderRepository;
-import com.uni.kitcheniq.repository.SupplierRepository;
+import com.uni.kitcheniq.mapper.*;
+import com.uni.kitcheniq.models.*;
+import com.uni.kitcheniq.repository.*;
 import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
@@ -36,6 +26,9 @@ public class AdminService {
     private final SupplierRepository supplierRepository;
     private final PurchaseOrderItemMapper purchaseOrderItemMapper;
     private final PurchaseOrderItemRepository purchaseOrderItemRepository;
+    private final EmployeeRepository employeeRepository;
+    private final EmployeeMapper employeeMapper;
+    private final SupplierMapper supplierMapper;
     private final EntityManager em;
 
     public String addInventoryItem(InventoryItemDTO inventoryItemDTO) {
@@ -137,4 +130,53 @@ public class AdminService {
         }
         return result;
     }
+
+    public List<EmployeeDTO> getAllEmployees() {
+        Optional<List<Employee>> employees = employeeRepository.getAllEmployees();
+        if (!employees.isPresent()) {
+           throw new NotEmployees("No employees found");
+        }
+        List<EmployeeDTO> employeeDTOs = new ArrayList<>();
+        for (Employee emp : employees.get()) {
+            employeeDTOs.add(employeeMapper.toEmployeeDTO(emp));
+        }
+        return employeeDTOs;
+    }
+
+    @Transactional
+    public String deleteEmployee(String id){
+        Optional<Employee> employee = employeeRepository.findById(id);
+        if (employee.isPresent()){
+            employeeRepository.deleteById(id);
+            return "Employee deleted successfully";
+        } else {
+            throw new NotEmployees("Employee not found with ID: " + id);
+        }
+    }
+
+    public List<SupplierDTO> getAllSuppliers() {
+        List<Supplier> suppliers = supplierRepository.findAll();
+        if (suppliers.isEmpty()) {
+            throw new SupplierNotFoundException("No suppliers found");
+        } else {
+            List<SupplierDTO> supplierDTOs = new ArrayList<>();
+            for (Supplier sup : suppliers) {
+                supplierDTOs.add(supplierMapper.toSupplierDTO(sup));
+            }
+            return supplierDTOs;
+        }
+    }
+
+    public List<InventoryItemDTO> getInventoryItemsBySupplierId(String supplierId) {
+        List<InventoryItem> items = inventoryItemRepository.getInventoryItemsBySupplierId(supplierId);
+        if (items.isEmpty()) {
+            throw new NoItemFoundException("No inventory items found for supplier ID: " + supplierId);
+        }
+        List<InventoryItemDTO> itemDTOs = new ArrayList<>();
+        for (InventoryItem item : items) {
+            itemDTOs.add(inventoryItemMapper.toInventoryItemDTO(item));
+        }
+        return itemDTOs;
+    }
+
 }

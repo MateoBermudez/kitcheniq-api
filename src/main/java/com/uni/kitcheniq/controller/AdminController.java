@@ -91,4 +91,17 @@ public class AdminController {
         List<InventoryItemDTO> items = adminService.getInventoryItemsBySupplierId(supplierId);
         return ResponseEntity.ok(items);
     }
+
+    @PostMapping("/register-employee")
+    public ResponseEntity<String> registerEmployee(@RequestBody EmployeeRequest employeeRequest) {
+        String response = adminService.registerEmployee(employeeRequest);
+        return ResponseEntity.ok(response);
+    }
+
+    @PutMapping("/edit-employee/{id}")
+    public ResponseEntity<String> editEmployee(@PathVariable String id, @RequestBody EmployeeRequest employeeRequest) {
+        String response = adminService.editEmployee(id, employeeRequest);
+        return ResponseEntity.ok(response);
+    }
+
 }

@@ -12,6 +12,9 @@ import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
+import com.uni.kitcheniq.dto.EmployeeRequest;
+import com.uni.kitcheniq.exception.InvalidDataException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.*;
 
@@ -30,6 +33,7 @@ public class AdminService {
     private final EmployeeMapper employeeMapper;
     private final SupplierMapper supplierMapper;
     private final EntityManager em;
+    private final PasswordEncoder passwordEncoder;
 
     public String addInventoryItem(InventoryItemDTO inventoryItemDTO) {
         if (inventoryItemDTO == null) {
@@ -177,6 +181,70 @@ public class AdminService {
             itemDTOs.add(inventoryItemMapper.toInventoryItemDTO(item));
         }
         return itemDTOs;
+    }
+
+
+    @Transactional
+    public String registerEmployee(EmployeeRequest employeeRequest) {
+        if (!employeeRequest.getId().matches("\\d+")) {
+            throw new InvalidDataException("ID must contain only numbers.");
+        }
+        if (employeeRepository.existsById(employeeRequest.getId())) {
+            throw new InvalidDataException("Employee with this ID already exists.");
+        }
+        if (employeeRequest.getHourlyRate() <= 0) {
+            throw new InvalidDataException("Hourly rate must be a positive number.");
+        }
+
+        Employee employee = employeeMapper.toEntity(employeeRequest);
+        employee.setPassword(passwordEncoder.encode(employeeRequest.getPassword()));
+
+        employeeRepository.save(employee);
+
+        return "Employee registered successfully.";
+    }
+
+    @Transactional
+    public String editEmployee(String id, EmployeeRequest employeeRequest) {
+        Employee employee = employeeRepository.findById(id)
+                .orElseThrow(() -> new NotEmployees("Employee not found with ID: " + id));
+
+        // Validar y actualizar campos
+        if (employeeRequest.getName() != null) {
+            employee.setName(employeeRequest.getName());
+        }
+        if (employeeRequest.getLastName() != null) {
+            employee.setLastName(employeeRequest.getLastName());
+        }
+        if (employeeRequest.getEmployeeType() != null) {
+            employee.setType(employeeRequest.getEmployeeType());
+        }
+        if (employeeRequest.getHourlyRate() != null) {
+            if (employeeRequest.getHourlyRate() <= 0) {
+                throw new InvalidDataException("Hourly rate must be a positive number.");
+            }
+            employee.setHourlyRate(employeeRequest.getHourlyRate());
+        }
+        if (employeeRequest.getPassword() != null && !employeeRequest.getPassword().isEmpty()) {
+            employee.setPassword(passwordEncoder.encode(employeeRequest.getPassword()));
+        }
+
+        // Manejar cambio de ID (PK)
+        if (employeeRequest.getId() != null && !employeeRequest.getId().equals(id)) {
+            if (!employeeRequest.getId().matches("\\d+")) {
+                throw new InvalidDataException("New ID must contain only numbers.");
+            }
+            if (employeeRepository.existsById(employeeRequest.getId())) {
+                throw new InvalidDataException("An employee with the new ID already exists.");
+            }
+            // Como el ID es la clave primaria, eliminamos el antiguo y creamos uno nuevo
+            employeeRepository.deleteById(id);
+            employee.setId(employeeRequest.getId());
+        }
+
+        employeeRepository.save(employee);
+
+        return "Employee updated successfully.";
     }
 
 }

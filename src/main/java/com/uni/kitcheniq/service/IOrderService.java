@@ -5,6 +5,7 @@ import com.uni.kitcheniq.models.Order;
 import com.uni.kitcheniq.models.OrderItem;
 import com.uni.kitcheniq.models.OrderStatus;
 
+import java.time.LocalDate;
 import java.util.List;
 
 public interface IOrderService {
@@ -21,4 +22,5 @@ public interface IOrderService {
     void deleteOrderItemByOrderId(Long orderId, Long productId);
     List<Order> getOrdersByStatus(com.uni.kitcheniq.enums.OrderStatusType statusType);
     OrderStatus updateOrderStatus(Long orderId, OrderStatusType status);
+    double getDailyEarnings(LocalDate date);
 }

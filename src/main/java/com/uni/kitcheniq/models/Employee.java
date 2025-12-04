@@ -2,6 +2,7 @@ package com.uni.kitcheniq.models;
 
 import com.uni.kitcheniq.enums.EmployeeType;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Positive;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -29,9 +30,18 @@ public class Employee implements AppUserDetails{
     @Column(name = "name", nullable = false)
     private String name;
 
+    @Column(name = "last_name", nullable = false, columnDefinition = "varchar(255) default ''")
+    private String lastName;
+
     @Column(name = "type", nullable = false)
     @Enumerated(EnumType.ORDINAL)
     EmployeeType type;
+
+
+    @Column(name = "hourly_rate", nullable = false, columnDefinition = "float default 0.0")
+    @Positive
+    private Double hourlyRate;
+
 
     @Override
     public String getName() {

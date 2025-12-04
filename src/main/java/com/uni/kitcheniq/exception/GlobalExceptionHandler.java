@@ -46,4 +46,42 @@ public class GlobalExceptionHandler {
 
         return ResponseEntity.status(401).body(errorMessage);
     }
+
+    @ExceptionHandler(NoItemFoundException.class)
+    public ResponseEntity<ErrorMessage> handleNoItemFoundException(NoItemFoundException ex, HttpServletRequest request) {
+        ErrorMessage errorMessage = new ErrorMessage();
+        errorMessage.setMessage(ex.getMessage());
+        errorMessage.setCause(ex.getCause() != null ? ex.getCause().toString() : null);
+        errorMessage.setStatusCode(404);
+        errorMessage.setTimestamp(System.currentTimeMillis());
+        errorMessage.setPath(request.getRequestURI());
+        errorMessage.setErrorCode("NO_ITEM_FOUND");
+
+        return ResponseEntity.status(404).body(errorMessage);
+    }
+
+    @ExceptionHandler(SupplierNotFoundException.class)
+    public ResponseEntity<ErrorMessage> handleSupplierNotFoundException(SupplierNotFoundException ex, HttpServletRequest request) {
+        ErrorMessage errorMessage = new ErrorMessage();
+        errorMessage.setMessage(ex.getMessage());
+        errorMessage.setCause(ex.getCause() != null ? ex.getCause().toString() : null);
+        errorMessage.setStatusCode(404);
+        errorMessage.setTimestamp(System.currentTimeMillis());
+        errorMessage.setPath(request.getRequestURI());
+        errorMessage.setErrorCode("SUPPLIER_NOT_FOUND");
+
+        return ResponseEntity.status(404).body(errorMessage);
+    }
+
+    @ExceptionHandler(NotEmployees.class)
+    public ResponseEntity<ErrorMessage> handleNotEmployeesException(NotEmployees ex, HttpServletRequest request) {
+        ErrorMessage errorMessage = new ErrorMessage();
+        errorMessage.setMessage(ex.getMessage());
+        errorMessage.setCause(ex.getCause() != null ? ex.getCause().toString() : null);
+        errorMessage.setStatusCode(403);
+        errorMessage.setTimestamp(System.currentTimeMillis());
+        errorMessage.setPath(request.getRequestURI());
+        errorMessage.setErrorCode("NOT_EMPLOYEES");
+        return ResponseEntity.status(403).body(errorMessage);
+    }
 }

@@ -2,6 +2,7 @@ package com.uni.kitcheniq.repository;
 
 import com.uni.kitcheniq.enums.PurchaseOrderType;
 import com.uni.kitcheniq.models.PurchaseOrder;
+import com.uni.kitcheniq.models.PurchaseOrderItem;
 import jakarta.transaction.Transactional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -37,4 +38,14 @@ public interface PurchaseOrderRepository extends JpaRepository<PurchaseOrder, Lo
     @Query("SELECT po FROM PurchaseOrder po LEFT JOIN FETCH po.items WHERE po.supplier.id = :supplierId")
     List<PurchaseOrder> getPurchaseOrderBySupplierId(String supplierId);
 
+    PurchaseOrder findPurchaseOrderById(Long id);
+
+    @Modifying
+    @Transactional
+    @Query("UPDATE PurchaseOrder po SET po.totalAmount = po.totalAmount + :value WHERE po.id = :id")
+    void addToTotalAmountById(Long id, double value);
+
+    @Transactional
+    @Modifying
+    void deletePurchaseOrderById(Long id);
 }

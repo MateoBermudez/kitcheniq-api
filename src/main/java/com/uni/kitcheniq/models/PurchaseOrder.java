@@ -8,6 +8,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.Set;
 
 @Entity
@@ -34,16 +35,26 @@ public class PurchaseOrder {
     @Column(name = "total_amount", nullable = false)
     private Double totalAmount;
 
-    @OneToMany(mappedBy = "purchaseOrder", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "purchaseOrder", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
-    private Set<PurchaseOrderItem> items;
+    @Builder.Default
+    private Set<PurchaseOrderItem> items = new HashSet<>();
 
     @CreationTimestamp
     private LocalDateTime createdAt;
 
     @UpdateTimestamp
     private LocalDateTime updatedAt;
+
+    public void addItem(PurchaseOrderItem item) {
+        if (this.items == null) {
+            this.items = new HashSet<>();
+        }
+        this.items.add(item);
+        item.setPurchaseOrder(this);
+    }
+
 
 
 }

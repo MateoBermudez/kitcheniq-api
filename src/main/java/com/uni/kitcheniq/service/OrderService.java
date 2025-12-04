@@ -281,4 +281,19 @@ public class OrderService implements IOrderService {
         }
         return null;
     }
+
+    @Override
+    public double getDailyEarnings(LocalDate date) {
+        List<Order> orders = orderRepository.findByOrderDate(date);
+
+        return orders.stream()
+                .filter(order -> {
+                    // Excluir órdenes canceladas del cálculo de ganancias
+                    return orderStatusRepository.findStatusByOrders_Id(order.getId())
+                            .map(status -> status.getStatus() != OrderStatusType.CANCELLED)
+                            .orElse(true); // Si no tiene estado, se asume que no está cancelada
+                })
+                .mapToDouble(Order::getOrderPrice)
+                .sum();
+    }
 }

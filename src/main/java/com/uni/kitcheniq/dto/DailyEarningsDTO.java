@@ -4,11 +4,12 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Data
-@AllArgsConstructor
-@NoArgsConstructor
-public class AddItemDTO {
-    private Long menuComponentId;
-    private Integer quantity = 1;
+import java.time.LocalDate;
 
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+public class DailyEarningsDTO {
+    private LocalDate date;
+    private Double totalEarnings;
 }

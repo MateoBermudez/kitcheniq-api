@@ -2,6 +2,7 @@ package com.uni.kitcheniq.controller;
 
 import com.uni.kitcheniq.dto.AddItemDTO;
 import com.uni.kitcheniq.dto.CreateOrderDTO;
+import com.uni.kitcheniq.dto.DailyEarningsDTO;
 import com.uni.kitcheniq.dto.OrderResponseDTO;
 import com.uni.kitcheniq.enums.OrderStatusType;
 import com.uni.kitcheniq.models.*;
@@ -9,9 +10,11 @@ import com.uni.kitcheniq.repository.MenuProductRepository;
 import com.uni.kitcheniq.repository.OrderStatusRepository;
 import com.uni.kitcheniq.service.IOrderService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -140,4 +143,15 @@ public class OrderController {
         dto.setDeliverTime(order.getDeliverTime() != null ? order.getDeliverTime().toString() : null);
         return dto;
     }
+
+
+    @GetMapping("/daily-earnings")
+    public ResponseEntity<DailyEarningsDTO> getDailyEarnings(
+            @RequestParam("date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
+        double totalEarnings = orderService.getDailyEarnings(date);
+        DailyEarningsDTO response = new DailyEarningsDTO(date, totalEarnings);
+        return ResponseEntity.ok(response);
+    }
+
+
 }
